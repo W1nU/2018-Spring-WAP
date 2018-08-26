@@ -24,23 +24,37 @@ def extract_from_json(response):
     weather_dict = json.loads(response)
     return weather_dict['response']['body']['items']['item']
 
+def make_time_for_use(flag):
+    if flag == 0:
+        time_now = datetime.now()
+        date_for_use = (time_now - timedelta(days = 1)).strftime("%Y%m%d") if time_now.strftime("%H") == '00' and int(time_now.strftime("%M")) < 40 else date.today().strftime("%Y%m%d")
+
+        if int(time_now.strftime("%H")) == 0 and int(time_now.strftime("%M")) < 40:
+            basetime = '2300'
+        elif int(time_now.strftime("%M")) >= 40:
+            basetime = time_now.strftime("%H00")
+        else:
+            basetime = (time_now - timedelta(hours = 1)).strftime("%H") + '00'
+
+        return date_for_use, basetime
+
+    elif flag == 1:
+        time_now = datetime.now()
+        timetable = ['0200','0500','0800','1100','1400','1700','2000','2300']
+        date_for_use =
+
+        return date_for_use,basetime
+
 def get_weather_forecast():
-    raw = r.get(f"http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?ServiceKey=8dWQmx%2BNiHDmMCfGwZXFIVYPWv807wuz5H%2FE9GLP42G3Al662%2B1vgdjKnM3vPBO65garXv%2BCyBTu5oGKgCmZwg%3D%3D&base_date={date_today}&base_time=0500&nx=98&ny=75&_type=json")
-    #weather_info = extract_from_json(raw.content)
-    #pprint.pprint(weather_info)
-    pprint(weather_info)
+    date_for_use, basetime = make_time_for_use(1)
+    print(date_for_use, basetime)
+    raw = r.get(f"http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?ServiceKey=8dWQmx%2BNiHDmMCfGwZXFIVYPWv807wuz5H%2FE9GLP42G3Al662%2B1vgdjKnM3vPBO65garXv%2BCyBTu5oGKgCmZwg%3D%3D&base_date={date_for_use}&base_time={basetime}&nx=98&ny=75&_type=json")
+
+    pprint(raw.content)
 
 def get_weather_now():
     weather_info = {}
-    time = datetime.now()
-    date_for_use = (datetime.now() - timedelta(days = 1)).strftime("%Y%m%d") if datetime.now().strftime("%H") == '0' and int(datetime.now().strftime("%M")) < 40 else date.today().strftime("%Y%m%d")
-
-    if int(time.strftime("%H")) == 0 and int(time.strftime("%M")) < 40:
-        basetime = '2300'
-    elif int(time.strftime("%M")) >= 40:
-        basetime = time.strftime("%H00")
-    else:
-        basetime = str(int(time.strftime("%H")) - 1) + '00'
+    date_for_use, basetime = make_time_for_use(0)
 
     raw = r.get(f"http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastGrib?ServiceKey=8dWQmx%2BNiHDmMCfGwZXFIVYPWv807wuz5H%2FE9GLP42G3Al662%2B1vgdjKnM3vPBO65garXv%2BCyBTu5oGKgCmZwg%3D%3D&base_date={date_for_use}&base_time={basetime}&nx=98&ny=75&pageNo=1&numOfRows=10&_type=json")
     weather_info_raw = extract_from_json(raw.content)
