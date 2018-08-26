@@ -1,5 +1,6 @@
 import discord
 import asyncio
+import crawl
 
 client = discord.Client()
 
@@ -14,5 +15,5 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.content.startswith('!날씨'):
-        await client.send_message(message.channel, '날씨 ')
+        await client.send_message(message.channel, crawl.get_weather_now())
 client.run('NDQ1NTg3NjU4OTcwODkwMjQx.Dl6iWQ.5ieRq0KZuwYyRd-Q7KTCn9yJS0k')
