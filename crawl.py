@@ -63,24 +63,22 @@ def make_time_for_use():
 
 
 def get_weather_forecast():
-
     raw = r.get(f"http://newsky2.kma.go.kr/service/VilageFrcstDspthDocInfoService/WidOverlandForecast?ServiceKey=8dWQmx%2BNiHDmMCfGwZXFIVYPWv807wuz5H%2FE9GLP42G3Al662%2B1vgdjKnM3vPBO65garXv%2BCyBTu5oGKgCmZwg%3D%3D&regId=11H20201&_type=json")
     weather_info_raw = extract_from_json(raw.content)
-
-    pprint(weather_info_raw)
+    weather_info = []
     for i in weather_info_raw:
-        if i['numEf'] == 1:
+        try:
             weather_dict = {}
             for j in i.keys():
-                pprint(j)
                 if j in decoding_codes_for_forecast.keys():
                     weather_dict[decoding_codes_for_forecast[j]] = i[j]
-            pprint(weather_dict)
+                elif j in decoding_codes_for_forecast_2layer.keys():
+                    weather_dict[decoding_codes_for_forecast_2layer[j][0]] = decoding_codes_for_forecast_2layer[j][1][i[j]]
+            weather_info.append(weather_dict)
+        except:
+            continue
 
-
-
-        #elif i['numEf'] == 1
-
+    return weather_info
 
 
 def get_weather_now():
@@ -98,5 +96,3 @@ def get_weather_now():
             weather_info[decoding_codes_2layer[info['category']][0]] = decoding_codes_2layer[info['category']][1][str(info['obsrValue'])]
 
     return weather_info, date_for_use, basetime
-
-get_weather_forecast()
